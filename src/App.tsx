@@ -6,12 +6,14 @@ import './style/css/login.css'
 import './style/css/header.css'
 import './style/css/category.css'
 import './style/css/categoryModal.css'
+import './style/css/user.css'
 
 
 import Login from './components/Login';
 import Category from './components/Category';
 import Header from './components/Header';
 import SideMenu from './components/SideMenu';
+import User from './components/User';
 
 
 function App() {
@@ -26,6 +28,7 @@ function App() {
                       <Routes>
                           <Route path="/" element={<Category/>}/>
                           <Route path="/admin/category" element={<Category/>}/>
+                          <Route path="/admin/user" element={<User/>}/>
                       </Routes>
                   </div>
               </div>
