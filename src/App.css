@@ -1,5 +1,9 @@
 .App {
-  text-align: center;
+  /*text-align: center;*/
+}
+.content {
+  display: flex; /* content를 flex로 설정 */
+  flex: 1; /* 화면 높이를 꽉 채우기 */
 }
 
 .App-logo {

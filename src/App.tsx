@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
+import { Routes, Route, BrowserRouter as Router, useNavigate } from 'react-router-dom';
 import './App.css';
+import './style/css/sideMenu.css'
+import './style/css/login.css'
+import './style/css/header.css'
+import './style/css/category.css'
+import './style/css/categoryModal.css'
+
+
+import Login from './components/Login';
+import Category from './components/Category';
+import Header from './components/Header';
+import SideMenu from './components/SideMenu';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      <div className="App">
+          <Router>
+              {/*<Login/>*/}
+              <Header/>
+              <div className="parent-container">
+                  <SideMenu/>
+                  <div className="main-content">
+                      <Routes>
+                          <Route path="/" element={<Category/>}/>
+                          <Route path="/admin/category" element={<Category/>}/>
+                      </Routes>
+                  </div>
+              </div>
+          </Router>
+      </div>
+);
 }
 
 export default App;
