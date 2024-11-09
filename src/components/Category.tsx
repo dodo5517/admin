@@ -18,16 +18,17 @@ function Category() {
         small: ['Galaxy Note 10+', 'iPhone 12', 'Macbook Pro', '기타'],
     });
 
-    const [editCategory, setEditCategory] = useState<{ name: string; type: CategoryType } | null>(null);
+    //카테고리 선택 유무
     const [selectedLargeCategory, setSelectedLargeCategory] = useState<string | null>(null);
-    //수정, 삭제 states
     const [selectedMiddleCategory, setSelectedMiddleCategory] = useState<string | null>(null);
+    //수정, 삭제 states
+    const [editCategory, setEditCategory] = useState<{ name: string; type: CategoryType } | null>(null);
     const [deleteCategory, setDeleteCategory] = useState<{ name: string; type: CategoryType } | null>(null);
     //추가 모달 상태
     const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
     const [addCategory, setAddCategory] = useState<{ name: string; type: CategoryType } | null>(null);
 
-
+    //카테고리 선택 이벤트
     const handleCategoryClick = (e: React.MouseEvent, categoryName: string, categoryType: CategoryType) => {
         e.stopPropagation();
         // 카테고리 유형에 따라 상태를 다르게 업데이트
@@ -39,18 +40,18 @@ function Category() {
         }
     };
 
-    //수정 클릭 확인
+    //수정 클릭 이벤트
     const handleEditClick = (e: React.MouseEvent, categoryName: string, categoryType: CategoryType) => {
         e.stopPropagation();
         setEditCategory({ name: categoryName, type: categoryType });
     };
 
-    //삭제 클릭 확인
+    //삭제 클릭 이벤트
     const handleDeleteClick = (e: React.MouseEvent, categoryName: string, categoryType: CategoryType) => {
         e.stopPropagation();
         setDeleteCategory({ name: categoryName, type: categoryType }); // 삭제할 카테고리 설정
     };
-    //추가 클릭 확인
+    //추가 클릭 이벤트
     const handleAddClick = (categoryType: CategoryType) => {
         setAddCategory({ name: '', type: categoryType }); // 카테고리 추가 상태 설정
         setIsAddModalOpen(true); // 카테고리 추가 모달 열기
@@ -101,6 +102,7 @@ function Category() {
         }
     };
 
+    //저장 안하고 창 닫기
     const handleCancel = () => {
         setEditCategory(null);
         setDeleteCategory(null);
@@ -201,7 +203,7 @@ function Category() {
                 />
             )}
 
-            {/* 편집 모달 */}
+            {/* 수정 모달 */}
             {editCategory && (
                 <CategoryEditModal
                     category={editCategory.name}
