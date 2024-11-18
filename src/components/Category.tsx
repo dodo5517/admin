@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from "react";
 import { CategoryEditModal } from "./CategoryEditModal";
 import { CategoryDeleteModal } from "./CategoryDeleteModal";
 import { CategoryAddModal } from "./CategoryAddModal";
@@ -12,23 +12,57 @@ type Category = {
 };
 
 function Category() {
+    const dragItem = useRef<number | null>(null); // 드래그할 아이템의 인덱스
+    const dragOverItem = useRef<number | null>(null); // 드랍할 위치의 아이템의 인덱스
+
     const [categories, setCategories] = useState<Category>({
         large: ['휴대폰', '노트북', '모니터', '주변기기', '기타'],
         middle: ['AOS', 'iOS', '기타'],
         small: ['Galaxy Note 10+', 'iPhone 12', 'Macbook Pro', '기타'],
     });
 
-    //카테고리 선택 유무
+    // 드래그 시작될 때 실행
+    const dragStart = (e: React.DragEvent<HTMLLIElement>, position: number) => {
+        dragItem.current = position;
+        console.log(e.currentTarget.innerHTML); // 드래그 시작된 아이템 출력
+    };
+
+    // 드래그중인 대상이 위로 포개졌을 때
+    const dragEnter = (e: React.DragEvent<HTMLLIElement>, position: number) => {
+        dragOverItem.current = position;
+        console.log(e.currentTarget.innerHTML); // 드래그 대상 아이템 출력
+    };
+
+    // 드랍 (커서 뗐을 때)
+    const drop = (e: React.DragEvent<HTMLLIElement>, categoryType: CategoryType) => {
+        e.preventDefault(); // 드롭 이벤트의 기본 동작을 막음
+        const updatedCategories = { ...categories }; // 카테고리 리스트 가져옴
+        // 드래그, 오버한 아이템을 가져옴
+        if (dragItem.current === null || dragOverItem.current === null) return;
+        const dragItemValue = updatedCategories[categoryType][dragItem.current];
+        const dragOverItemValue = updatedCategories[categoryType][dragOverItem.current];
+        // 리스트 내에서 두 아이템을 교환
+        updatedCategories[categoryType].splice(dragItem.current, 1, dragOverItemValue);
+        updatedCategories[categoryType].splice(dragOverItem.current, 1, dragItemValue);
+        // 상태를 업데이트하여 화면에 반영
+        setCategories(updatedCategories);
+        // 드래그와 드랍 아이템 참조를 초기화
+        dragItem.current = null;
+        dragOverItem.current = null;
+        console.log(categories);
+    };
+
+    // 카테고리 선택 유무
     const [selectedLargeCategory, setSelectedLargeCategory] = useState<string | null>(null);
     const [selectedMiddleCategory, setSelectedMiddleCategory] = useState<string | null>(null);
-    //수정, 삭제 states
+    // 수정, 삭제 states
     const [editCategory, setEditCategory] = useState<{ name: string; type: CategoryType } | null>(null);
     const [deleteCategory, setDeleteCategory] = useState<{ name: string; type: CategoryType } | null>(null);
-    //추가 모달 상태
+    // 추가 모달 상태
     const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
     const [addCategory, setAddCategory] = useState<{ name: string; type: CategoryType } | null>(null);
 
-    //카테고리 선택 이벤트
+    // 카테고리 선택 이벤트
     const handleCategoryClick = (e: React.MouseEvent, categoryName: string, categoryType: CategoryType) => {
         e.stopPropagation();
         // 카테고리 유형에 따라 상태를 다르게 업데이트
@@ -40,24 +74,25 @@ function Category() {
         }
     };
 
-    //수정 클릭 이벤트
+    // 수정 클릭 이벤트
     const handleEditClick = (e: React.MouseEvent, categoryName: string, categoryType: CategoryType) => {
         e.stopPropagation();
         setEditCategory({ name: categoryName, type: categoryType });
     };
 
-    //삭제 클릭 이벤트
+    // 삭제 클릭 이벤트
     const handleDeleteClick = (e: React.MouseEvent, categoryName: string, categoryType: CategoryType) => {
         e.stopPropagation();
         setDeleteCategory({ name: categoryName, type: categoryType }); // 삭제할 카테고리 설정
     };
-    //추가 클릭 이벤트
+
+    // 추가 클릭 이벤트
     const handleAddClick = (categoryType: CategoryType) => {
         setAddCategory({ name: '', type: categoryType }); // 카테고리 추가 상태 설정
         setIsAddModalOpen(true); // 카테고리 추가 모달 열기
     };
 
-    //수정내용 저장
+    // 수정 내용 저장
     const handleSave = (updatedCategory: string, categoryType: CategoryType) => {
         // Save logic for updating category
         setCategories(prevCategories => {
@@ -74,7 +109,7 @@ function Category() {
         setEditCategory(null);
     };
 
-    //추가
+    // 추가
     const handleAdd = (newCategory: string, categoryType: CategoryType) => {
         setCategories(prevCategories => {
             const updatedCategories = { ...prevCategories };
@@ -84,7 +119,7 @@ function Category() {
         setIsAddModalOpen(false); // 카테고리 추가 후 모달 닫기
     };
 
-    //삭제
+    // 삭제
     const handleDelete = () => {
         if (deleteCategory) {
             setCategories(prevCategories => {
@@ -102,7 +137,7 @@ function Category() {
         }
     };
 
-    //저장 안하고 창 닫기
+    // 저장 안 하고 창 닫기
     const handleCancel = () => {
         setEditCategory(null);
         setDeleteCategory(null);
@@ -124,13 +159,16 @@ function Category() {
                                 <li key={i}
                                     className={selectedLargeCategory === largeCategory_name ? 'selected' : ''}
                                     onClick={(e) => handleCategoryClick(e, largeCategory_name, 'large')}
+                                    draggable
+                                    onDragStart={(e) => dragStart(e, i)}
+                                    onDragEnter={(e) => dragEnter(e, i)}
+                                    onDragEnd={(e) => drop(e, 'large')}
+                                    onDragOver={(e) => e.preventDefault()}
                                 >
                                     <span>{largeCategory_name}</span>
                                     <div className="button-group">
-                                        <button onClick={(e) => handleEditClick(e, largeCategory_name, 'large')}>✎
-                                        </button>
-                                        <button onClick={(e) => handleDeleteClick(e, largeCategory_name, 'large')}>✖
-                                        </button>
+                                        <button onClick={(e) => handleEditClick(e, largeCategory_name, 'large')}>✎</button>
+                                        <button onClick={(e) => handleDeleteClick(e, largeCategory_name, 'large')}>✖</button>
                                     </div>
                                 </li>
                             );
@@ -151,15 +189,16 @@ function Category() {
                                     <li key={i}
                                         className={selectedMiddleCategory === middleCategory_name ? 'selected' : ''}
                                         onClick={(e) => handleCategoryClick(e, middleCategory_name, 'middle')}
+                                        draggable
+                                        onDragStart={(e) => dragStart(e, i)}
+                                        onDragEnter={(e) => dragEnter(e, i)}
+                                        onDragEnd={(e) => drop(e, 'middle')}
+                                        onDragOver={(e) => e.preventDefault()}
                                     >
                                         <span>{middleCategory_name}</span>
                                         <div className="button-group">
-                                            <button
-                                                onClick={(e) => handleEditClick(e, middleCategory_name, 'middle')}>✎
-                                            </button>
-                                            <button
-                                                onClick={(e) => handleDeleteClick(e, middleCategory_name, 'middle')}>✖
-                                            </button>
+                                            <button onClick={(e) => handleEditClick(e, middleCategory_name, 'middle')}>✎</button>
+                                            <button onClick={(e) => handleDeleteClick(e, middleCategory_name, 'middle')}>✖</button>
                                         </div>
                                     </li>
                                 );
@@ -180,6 +219,11 @@ function Category() {
                                 return (
                                     <li key={i}
                                         onClick={(e) => handleCategoryClick(e, smallCategory_name, 'small')}
+                                        draggable
+                                        onDragStart={(e) => dragStart(e, i)}
+                                        onDragEnter={(e) => dragEnter(e, i)}
+                                        onDragEnd={(e) => drop(e, 'small')}
+                                        onDragOver={(e) => e.preventDefault()}
                                     >
                                         <span>{smallCategory_name}</span>
                                         <div className="button-group">
