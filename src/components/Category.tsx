@@ -21,6 +21,16 @@ function Category() {
         small: ['Galaxy Note 10+', 'iPhone 12', 'Macbook Pro', '기타'],
     });
 
+    // 카테고리 선택 유무
+    const [selectedLargeCategory, setSelectedLargeCategory] = useState<string | null>(null);
+    const [selectedMiddleCategory, setSelectedMiddleCategory] = useState<string | null>(null);
+    // 수정, 삭제 states
+    const [editCategory, setEditCategory] = useState<{ name: string; type: CategoryType } | null>(null);
+    const [deleteCategory, setDeleteCategory] = useState<{ name: string; type: CategoryType } | null>(null);
+    // 추가 모달 상태
+    const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+    const [addCategory, setAddCategory] = useState<{ name: string; type: CategoryType } | null>(null);
+
     // 드래그 시작될 때 실행
     const dragStart = (e: React.DragEvent<HTMLLIElement>, position: number) => {
         dragItem.current = position;
@@ -51,16 +61,6 @@ function Category() {
         dragOverItem.current = null;
         console.log(categories);
     };
-
-    // 카테고리 선택 유무
-    const [selectedLargeCategory, setSelectedLargeCategory] = useState<string | null>(null);
-    const [selectedMiddleCategory, setSelectedMiddleCategory] = useState<string | null>(null);
-    // 수정, 삭제 states
-    const [editCategory, setEditCategory] = useState<{ name: string; type: CategoryType } | null>(null);
-    const [deleteCategory, setDeleteCategory] = useState<{ name: string; type: CategoryType } | null>(null);
-    // 추가 모달 상태
-    const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-    const [addCategory, setAddCategory] = useState<{ name: string; type: CategoryType } | null>(null);
 
     // 카테고리 선택 이벤트
     const handleCategoryClick = (e: React.MouseEvent, categoryName: string, categoryType: CategoryType) => {

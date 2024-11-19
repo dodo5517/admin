@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import UserAddModal from "./UserAddModal";
 
-type User = {
+export type User = {
     id: number;
     name: string;
     email: string;
@@ -8,36 +9,16 @@ type User = {
     phone_number: string;
     dealing_count: number;
     reputation: number;
-    role: string; // number로 바꾸려나
+    role: string;
     auth_provider: string;
     profile_image: string | null;
     created_at: string;
     modified_at: string;
 };
 
-// interface User {
-//     id: number;
-//     name: string;
-//     email: string;
-//     password: string;
-//     address: string;
-//     phone_number: string;
-//     dealing_count: number;
-//     reputation: number;
-//     role: string;
-//     auth_provider: string;
-//     profile_image: string | null;
-//     created_at: string;
-//     modified_at: string;
-// }
-//
-// interface UserProps {
-//     isOpen: boolean;
-//     onClose: () => void;
-//     users: User[];
-// }
-function User(){
-    const users: User[] = [
+function User() {
+    // 사용자 상태 관리
+    const [users, setUsers] = useState<User[]>([
         {
             id: 1,
             email: 'dodo51@naver.com',
@@ -94,11 +75,30 @@ function User(){
             created_at: '2024-11-07',
             modified_at: '2024-11-07',
         },
-        // 다른 사용자 데이터 추가
-    ];
+    ]);
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+
+    // 추가 클릭 이벤트
+    const handleAddClick = () => {
+        setIsAddModalOpen(true); // 카테고리 추가 모달 열기
+    };
+
+    // 사용자 추가
+    const handleAddUser = (newUser: User) => {
+        setUsers((prevUsers) => [...prevUsers, newUser]);
+        setIsAddModalOpen(false);
+    };
+
+    // 모달 닫기
+    const handleCancel = () => {
+        setIsAddModalOpen(false);
+    };
 
     return (
+        <div>
             <div className="user-list">
+                <button onClick={handleAddClick}>추가하기</button>
                 <table>
                     <thead>
                     <tr>
@@ -118,7 +118,7 @@ function User(){
                     </tr>
                     </thead>
                     <tbody>
-                    {users.map((user:any) => (
+                    {users.map((user) => (
                         <tr key={user.id}>
                             <td>{user.id}</td>
                             <td>{user.email}</td>
@@ -141,7 +141,14 @@ function User(){
                     </tbody>
                 </table>
             </div>
-    )
+            {isAddModalOpen && (
+                <UserAddModal
+                    onClose={handleCancel}
+                    onAddUser={handleAddUser}
+                />
+            )}
+        </div>
+    );
 }
 
 export default User;

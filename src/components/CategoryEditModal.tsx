@@ -28,6 +28,9 @@ export const CategoryEditModal = ({ category, categoryType, onSave, onCancel }: 
                 <div className="modal-content">
                     <p>부모 카테고리 : {}</p>
                     <p>카테고리 분류 : {categoryTypeLabel}</p>
+                    <p>등록자 : 운영자</p>
+                    <p>등록한 시간 : 2024-10-18T09:05:46</p>
+                    <p>수정한 시간 : 2024-10-18T09:05:46</p>
                     <div className="label-div">
                         <label>
                             <span>카테고리 이름 :</span>
